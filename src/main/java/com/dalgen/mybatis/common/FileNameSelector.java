@@ -6,20 +6,20 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 /**
- * 文件类型选择去
+ * 文件类型选择器
  * <p/>
  *
  * @author bangis.wangdf
  * @date 16/3/23.18:19
  */
 public class FileNameSelector implements FilenameFilter {
-    private String extension = ".";
+    private String extension;
 
     public FileNameSelector(String fileExtension) {
-        if (StringUtils.startsWith(fileExtension, extension)) {
-            extension += fileExtension;
-        } else {
+        if (StringUtils.startsWith(fileExtension, ".")) {
             extension = fileExtension;
+        } else {
+            extension = "." + fileExtension;
         }
     }
 

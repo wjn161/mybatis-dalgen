@@ -113,7 +113,7 @@ public class Table {
      * @return the column list
      */
     public List<Column> getColumnList() {
-        return Lists.sortedCopy(columnList);
+        return Lists.newArrayList(columnList);
     }
 
     /**

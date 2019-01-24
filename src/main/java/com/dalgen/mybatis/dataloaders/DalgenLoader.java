@@ -74,7 +74,7 @@ public class DalgenLoader extends AbstractDalgenLoader {
         //解析所有table.xml(为生成sqlMap.xml做准备)
         Map<String, CfTable> cfTableMap = Maps.newHashMap();
         for (File file : tablesFile.listFiles(new FileNameSelector("xml"))) {
-            cfTableMap.put(file2DbName(file), cfTableRepository.gainCfTable(file));
+            cfTableMap.put(file2TableName(file), cfTableRepository.gainCfTable(file));
         }
 
         List<String> needGenTableNames = preNeedGenTableNames(cmd, cfTableMap);
@@ -98,18 +98,18 @@ public class DalgenLoader extends AbstractDalgenLoader {
             //准备Mapper.xml
             XmlMapper xmlMapper = new XmlMapper();
             //准备resultMap对应的对象
-            Map<String, Column> tbColumMap = Maps.newHashMap();
+            Map<String, Column> tbColumnMap = Maps.newHashMap();
             for (Column column : table.getColumnList()) {
-                tbColumMap.put(column.getSqlName(), column);
+                tbColumnMap.put(column.getSqlName(), column);
             }
-            Map<String, Filelds> fileldsMap = Maps.newHashMap();
+            Map<String, Filelds> fieldsMap = Maps.newHashMap();
             for (Filelds filelds : doClass.getFieldses()) {
-                fileldsMap.put(filelds.getName(), filelds);
+                fieldsMap.put(filelds.getName(), filelds);
             }
             Map<String, ResultMap> resultMaps = Maps.newHashMap();
 
             //preResultMap
-            preResultMap(gen, tbName, cfTable, table, xmlMapper, tbColumMap, fileldsMap, resultMaps);
+            preResultMap(gen, tbName, cfTable, table, xmlMapper, tbColumnMap, fieldsMap, resultMaps);
 
             //准备Mapper接口
             DOMapper doMapper = preDOMapper(gen, cfTable, table, doClass, resultMaps);
@@ -194,7 +194,7 @@ public class DalgenLoader extends AbstractDalgenLoader {
                         + "xml 配置有误 DalgenLoader.preResultMap Gen=" + gen);
                 Column column = new Column();
                 column.setJavaName(CamelCaseUtils.toCamelCase(cfColumn.getName()));
-                if (column.getJavaName().toUpperCase().equals(PRIMARY_KEY_NAME) && column.getSqlType().toUpperCase().equals(PRIMARY_KEY_TYPE)) {
+                if (PRIMARY_KEY_NAME.equalsIgnoreCase(column.getJavaName()) && PRIMARY_KEY_TYPE.equalsIgnoreCase(column.getSqlType())) {
                     column.setJavaType(LONG);
                 } else {
                     column.setJavaType(cfColumn.getJavatype());
@@ -240,7 +240,7 @@ public class DalgenLoader extends AbstractDalgenLoader {
         Map<String, String> columnDescMap = Maps.newHashMap();
         for (Column column : table.getColumnList()) {
             ////处理ID为BIGINT的时候会被识别为Money类型
-            if (column.getJavaName().toUpperCase().equals(PRIMARY_KEY_NAME) && column.getSqlType().toUpperCase().equals(PRIMARY_KEY_TYPE)) {
+            if (PRIMARY_KEY_NAME.equalsIgnoreCase(column.getJavaName()) && PRIMARY_KEY_TYPE.equalsIgnoreCase(column.getSqlType())) {
                 columnTypeMap.put(column.getJavaName(), LONG);
             } else {
                 columnTypeMap.put(column.getJavaName(), column.getJavaType());
@@ -313,7 +313,7 @@ public class DalgenLoader extends AbstractDalgenLoader {
         Map<String, String> columnTypeMap = Maps.newHashMap();
         Map<String, String> columnDescMap = Maps.newHashMap();
         for (Column column : table.getColumnList()) {
-            if (column.getJavaName().toUpperCase().equals(PRIMARY_KEY_NAME) && column.getSqlType().toUpperCase().equals(PRIMARY_KEY_TYPE)) {
+            if (PRIMARY_KEY_NAME.equalsIgnoreCase(column.getJavaName()) && PRIMARY_KEY_TYPE.equalsIgnoreCase(column.getSqlType())) {
                 columnTypeMap.put(column.getJavaName(), LONG);
             } else {
                 columnTypeMap.put(column.getJavaName(), column.getJavaType());
@@ -475,7 +475,7 @@ public class DalgenLoader extends AbstractDalgenLoader {
             DOMapperMethodParam methodParam;
             if (StringUtils.isBlank(foreachName)) {
                 ////处理ID为BIGINT的时候会被识别为Money类型
-                if (pmName.toLowerCase().equals("id") && pmType.toUpperCase().equals("BIGINT")) {
+                if (PRIMARY_KEY_NAME.equalsIgnoreCase(pmName) && PRIMARY_KEY_TYPE.equalsIgnoreCase(pmType)) {
                     methodParam = new DOMapperMethodParam("Long", pmName);
                 } else {
                     methodParam = new DOMapperMethodParam(paramType, pmName);
@@ -558,7 +558,7 @@ public class DalgenLoader extends AbstractDalgenLoader {
                 filelds.setName(column.getJavaName());
                 filelds.setDesc(column.getRemarks());
                 //处理ID为BIGINT的时候会被识别为Money类型
-                if (column.getJavaName().toUpperCase().equals("ID") && column.getSqlType().toUpperCase().equals("BIGINT")) {
+                if (PRIMARY_KEY_NAME.equalsIgnoreCase(column.getJavaName()) && PRIMARY_KEY_TYPE.equalsIgnoreCase(column.getSqlType())) {
                     filelds.setJavaType("Long");
                 } else {
                     filelds.setJavaType(getClassAndImport(doClass, column.getJavaType()));
