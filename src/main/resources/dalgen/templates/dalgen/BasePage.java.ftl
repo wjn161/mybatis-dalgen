@@ -1,6 +1,8 @@
 <@pp.dropOutputFile />
-<#list dalgen.pagings as paging>
+<#if dalgen.pagings?? && dalgen.pagings?size gt 0>
+    <#assign paging =dalgen.pagings?first>
     <@pp.changeOutputFile name = "/main/java/${paging.baseClassPath}/BasePage.java" />
+
 package ${paging.basePackageName};
 
 import java.util.List;
@@ -160,4 +162,4 @@ public class BasePage<T> {
         return sb.toString();
     }
 }
-</#list>
+</#if>
